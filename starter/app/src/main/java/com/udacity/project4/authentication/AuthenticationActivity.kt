@@ -46,8 +46,8 @@ class AuthenticationActivity : AppCompatActivity() {
                 AuthenticationViewModel.AuthenticationState.AUTHENTICATED -> {
 //                    val navController = Navigation.findNavController(this, R.id.auth_button)
 //                    navController.navigate(R.id.mainActivity)
-//                    val intent = Intent(this, RemindersActivity::class.java)
-//                    startActivity(intent)
+                    val intent = Intent(this, RemindersActivity::class.java)
+                    startActivity(intent)
                 }
                 else -> Log.e(
                     TAG,

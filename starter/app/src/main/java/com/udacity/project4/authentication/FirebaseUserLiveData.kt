@@ -19,6 +19,7 @@ package com.udacity.project4.authentication
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.LiveData
+import com.udacity.project4.utils.SingleLiveEvent
 
 /**
  * This class observes the current FirebaseUser. If there is no logged in user, FirebaseUser will
@@ -29,7 +30,7 @@ import androidx.lifecycle.LiveData
  * nature of your LiveData object, but is okay for this purpose since we are only adding and
  * removing the authStateListener.
  */
-class FirebaseUserLiveData : LiveData<FirebaseUser?>() {
+class FirebaseUserLiveData : SingleLiveEvent<FirebaseUser?>() {
     private val firebaseAuth = FirebaseAuth.getInstance()
 
 

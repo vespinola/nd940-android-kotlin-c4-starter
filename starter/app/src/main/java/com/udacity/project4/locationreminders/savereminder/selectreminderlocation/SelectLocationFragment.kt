@@ -55,7 +55,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: add the map setup implementation
         val mapFragment = childFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -68,6 +67,21 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         onLocationSelected()
 
         return binding.root
+    }
+
+    private fun setPoiClick(map: GoogleMap) {
+        map.setOnPoiClickListener { poi ->
+            map.clear()
+            val poiMarker = map.addMarker(
+                    MarkerOptions()
+                            .position(poi.latLng)
+                            .title(poi.name)
+            )
+
+            poiMarker.showInfoWindow()
+
+            binding.saveButton.visibility = View.VISIBLE
+        }
     }
 
     private fun onLocationSelected() {
@@ -107,6 +121,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         googleMap?.let {
             map = googleMap
             map.isMyLocationEnabled = true
+
+            setPoiClick(map)
 
             fusedLocationClient?.lastLocation?.addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful && task.result != null) {

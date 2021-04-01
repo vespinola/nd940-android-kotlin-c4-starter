@@ -14,7 +14,9 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.android.synthetic.main.activity_authentication.*
+import org.koin.android.ext.android.inject
 
 
 const val TAG = "AuthenticationActivity"

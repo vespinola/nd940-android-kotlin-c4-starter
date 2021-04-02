@@ -12,6 +12,7 @@ import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.data.dto.asDomain
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
@@ -74,14 +75,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                     val reminderDTO = result.data
                     //send a notification to the user with the reminder details
                     sendNotification(
-                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                            reminderDTO.title,
-                            reminderDTO.description,
-                            reminderDTO.location,
-                            reminderDTO.latitude,
-                            reminderDTO.longitude,
-                            reminderDTO.id
-                        )
+                        this@GeofenceTransitionsJobIntentService, reminderDTO.asDomain()
                     )
                 }
             }

@@ -74,10 +74,10 @@ class ReminderListFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                AuthUI.getInstance().signOut(requireContext())
-                _viewModel.navigationCommand.postValue(
-                        NavigationCommand.Back
-                )
+                //I've trying go back with Navigation.Back, but it did nothing :(
+                AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
+                    requireActivity().finish()
+                }
             }
         }
         return super.onOptionsItemSelected(item)

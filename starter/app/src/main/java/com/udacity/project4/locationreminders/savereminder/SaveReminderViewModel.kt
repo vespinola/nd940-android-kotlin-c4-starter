@@ -19,15 +19,17 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val reminderTitle = MutableLiveData<String?>()
     val reminderDescription = MutableLiveData<String?>()
     val selectedPOI = MutableLiveData<PointOfInterest?>()
-    val latitude: LiveData<Double?> = Transformations.map(selectedPOI) {
-        it?.latLng?.latitude
-    }
-    val longitude: LiveData<Double?> = Transformations.map(selectedPOI) {
-        it?.latLng?.longitude
-    }
 
-    val reminderSelectedLocationStr: LiveData<String?> = Transformations.map(selectedPOI) {
-        it?.name
+    val latitude = MutableLiveData<Double?>()
+    val longitude = MutableLiveData<Double?>()
+
+    val reminderSelectedLocationStr = MutableLiveData<String?>()
+
+    fun setSelectedPOI(poi: PointOfInterest) {
+        selectedPOI.postValue(poi)
+        latitude.postValue(poi.latLng.latitude)
+        longitude.postValue(poi.latLng.longitude)
+        reminderSelectedLocationStr.postValue(poi.name)
     }
 
     /**
@@ -37,16 +39,12 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         reminderTitle.value = null
         reminderDescription.value = null
         selectedPOI.value = null
+        latitude.value = null
+        longitude.value = null
+        reminderSelectedLocationStr.value = null
     }
 
-    /**
-     * Validate the entered data then saves the reminder data to the DataSource
-     */
-    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
-        if (validateEnteredData(reminderData)) {
-            saveReminder(reminderData)
-        }
-    }
+
 
     /**
      * Save the reminder to the data source
@@ -66,7 +64,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             )
             showLoading.value = false
             showToast.value = app.getString(R.string.reminder_saved)
-            navigationCommand.value = NavigationCommand.Back
         }
     }
 

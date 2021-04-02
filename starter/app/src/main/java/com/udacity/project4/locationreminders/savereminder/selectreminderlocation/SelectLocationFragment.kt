@@ -11,6 +11,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
@@ -32,8 +33,9 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import kotlinx.android.synthetic.main.fragment_select_location.*
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 
-private val TAG = SelectLocationFragment::class.java.simpleName
+private val REQUEST_LOCATION_PERMISSION = 1
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -54,21 +56,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
         val mapFragment = childFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
-
-
-//        TODO: call this function after the user confirms on the selected location
-
 
         binding.saveButton.setOnClickListener {
             onLocationSelected()
@@ -99,8 +92,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
 
-        _viewModel.selectedPOI.value = selectedPOI
-        findNavController().popBackStack()
+        selectedPOI?.let {
+            _viewModel.setSelectedPOI(it)
+            _viewModel.navigationCommand.postValue(NavigationCommand.Back)
+        }
     }
 
 
@@ -133,9 +128,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap?) {
         googleMap?.let {
             map = googleMap
+            setPoiClick(map)
+        }
+
+        enableMyLocation()
+    }
+    private fun isPermissionGranted() : Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+        if (isPermissionGranted()) {
             map.isMyLocationEnabled = true
 
-            setPoiClick(map)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
             fusedLocationClient?.lastLocation?.addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful && task.result != null) {
@@ -144,11 +153,30 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
                 }
                 else {
-                    Log.w(TAG, "getLastLocation:exception", task.exception)
+                    Timber.w("getLastLocation:exception: ${ task.exception}")
                 }
             }
+
+        }
+        else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                enableMyLocation()
+            }
+        }
+    }
 
 }

@@ -94,7 +94,7 @@ class SaveReminderFragment : BaseFragment() {
 
             if (_viewModel.validateEnteredData(newReminderDataItem!!)){
                 _viewModel.saveReminder(newReminderDataItem!!)
-                checkPermissionsAndStartGeofencing()
+                addGeofence()
             }
         }
     }
@@ -103,6 +103,11 @@ class SaveReminderFragment : BaseFragment() {
         super.onDestroy()
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkPermissionsAndStartGeofencing()
     }
 
     /*

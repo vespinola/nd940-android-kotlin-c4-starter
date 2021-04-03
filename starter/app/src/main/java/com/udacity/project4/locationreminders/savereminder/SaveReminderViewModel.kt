@@ -44,8 +44,6 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
         reminderSelectedLocationStr.value = null
     }
 
-
-
     /**
      * Save the reminder to the data source
      */

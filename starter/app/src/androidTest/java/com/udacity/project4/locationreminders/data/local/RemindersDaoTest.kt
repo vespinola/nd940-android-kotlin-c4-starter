@@ -27,4 +27,23 @@ class RemindersDaoTest {
 
 //    TODO: Add testing implementation to the RemindersDao.kt
 
+    // Executes each task synchronously using Architecture Components.
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+    private lateinit var database: RemindersDatabase
+
+    @Before
+    fun initDb() {
+        // Using an in-memory database so that the information stored here disappears when the
+        // process is killed.
+        database = Room.inMemoryDatabaseBuilder(
+                ApplicationProvider.getApplicationContext(),
+                RemindersDatabase::class.java
+        ).build()
+    }
+
+    @After
+    fun closeDb() = database.close()
+
 }

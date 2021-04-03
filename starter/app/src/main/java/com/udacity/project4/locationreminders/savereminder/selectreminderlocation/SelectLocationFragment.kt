@@ -124,14 +124,33 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            requireContext(),
+                            R.raw.map_style
+                    )
+            )
+            if (!success) {
+                Timber.e("Style parsing failed.")
+            }
+
+        } catch (e: Resources.NotFoundException) {
+            Timber.e("Can't find style. Error: $e")
+        }
+    }
+
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap?) {
         googleMap?.let {
             map = googleMap
             setPoiClick(map)
+            setMapStyle(map)
+            enableMyLocation()
         }
-
-        enableMyLocation()
     }
     private fun isPermissionGranted() : Boolean {
         return ContextCompat.checkSelfPermission(

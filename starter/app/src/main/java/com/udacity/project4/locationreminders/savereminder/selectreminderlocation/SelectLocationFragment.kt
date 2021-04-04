@@ -14,6 +14,7 @@ import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -81,9 +82,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             poiMarker.showInfoWindow()
 
-            selectedPOI = poi
-
-            binding.saveButton.visibility = View.VISIBLE
+            _viewModel.setSelectedPOI(poi)
         }
     }
 
@@ -92,10 +91,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
 
-        selectedPOI?.let {
-            _viewModel.setSelectedPOI(it)
-            _viewModel.navigationCommand.postValue(NavigationCommand.Back)
-        }
+        _viewModel.navigationCommand.postValue(NavigationCommand.Back)
     }
 
 

@@ -5,7 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.locationreminders.MainCoroutineRule
-import com.udacity.project4.locationreminders.data.FakeDataSource
+import com.udacity.project4.locationreminders.data.FakeTestDataSource
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -28,14 +28,14 @@ class RemindersListViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var reminderDataSource: FakeDataSource
+    private lateinit var reminderTestDataSource: FakeTestDataSource
     private lateinit var reminderListViewModel: RemindersListViewModel
 
     @Before
     fun setup() {
         stopKoin() //Koin stopped, because just DataSource is required(I think)
-        reminderDataSource = FakeDataSource()
-        reminderListViewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), reminderDataSource)
+        reminderTestDataSource = FakeTestDataSource()
+        reminderListViewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), reminderTestDataSource)
     }
 
     @Test
@@ -53,7 +53,7 @@ class RemindersListViewModelTest {
 
     @Test
     fun loadReminders_displayError()  {
-        reminderDataSource.setReturnError(true)
+        reminderTestDataSource.setReturnError(true)
 
         reminderListViewModel.loadReminders()
 

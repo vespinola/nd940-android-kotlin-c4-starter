@@ -6,9 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.MainCoroutineRule
-import com.udacity.project4.locationreminders.data.FakeDataSource
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.dto.asDomain
+import com.udacity.project4.locationreminders.data.FakeTestDataSource
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +30,7 @@ class SaveReminderViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var reminderDataSource: FakeDataSource
+    private lateinit var reminderTestDataSource: FakeTestDataSource
     private lateinit var saveReminderViewModel: SaveReminderViewModel
 
     private lateinit var reminderToAdd: ReminderDataItem
@@ -40,8 +38,8 @@ class SaveReminderViewModelTest {
     @Before
     fun setup() {
         stopKoin() //Koin stopped, because just DataSource is required(I think)
-        reminderDataSource = FakeDataSource()
-        saveReminderViewModel = SaveReminderViewModel(ApplicationProvider.getApplicationContext(), reminderDataSource)
+        reminderTestDataSource = FakeTestDataSource()
+        saveReminderViewModel = SaveReminderViewModel(ApplicationProvider.getApplicationContext(), reminderTestDataSource)
 
         reminderToAdd = ReminderDataItem(
             "Palace of the López",

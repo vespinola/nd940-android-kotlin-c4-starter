@@ -55,6 +55,7 @@ class RemindersLocalRepositoryTest {
     fun closeDb() = database.close()
 
     @Test
+    // runBlocking is used here because of https://github.com/Kotlin/kotlinx.coroutines/issues/1204
     fun saveReminder_retrieveReminder() = runBlocking {
         val reminder = ReminderDTO(
                 "Palace of the López",

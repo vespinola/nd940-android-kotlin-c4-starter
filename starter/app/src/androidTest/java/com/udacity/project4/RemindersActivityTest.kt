@@ -28,6 +28,7 @@ import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.core.IsNot.not
 import org.junit.After
 import org.junit.Before
@@ -112,17 +113,38 @@ class RemindersActivityTest :
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
     }
 
-
-//    TODO: add End to End testing to the app
-    @Test
-    fun createOneReminder_showToast() = runBlocking {
-        val reminder = ReminderDataItem(
+    private fun createReminder(): ReminderDTO {
+        return ReminderDTO(
             "Palace of the Lopez",
             "Serves as workplace for the President of Paraguay",
             "Paraguay",
             -25.2772267,
             -57.6372439
         )
+    }
+
+
+    @Test
+    fun createOneReminder_checkList() = runBlocking {
+        val reminder = createReminder()
+        repository.saveReminder(reminder)
+
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        delay(3000)
+
+        onView(RecyclerViewMatcher(R.id.reminderssRecyclerView)
+            .atPositionOnView(0, R.id.title))
+            .check(matches(withText(reminder.title)))
+            .check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun createOneReminder_showSnackbar() = runBlocking {
+        val reminder = createReminder()
 
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
